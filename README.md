@@ -1,5 +1,7 @@
 # Tattavyan Edutech - Smart School Management System
 
+**🌍 Live Website Link:** [https://smart123-12.github.io/tattavyan-school/](https://smart123-12.github.io/tattavyan-school/)
+
 A modern, responsive, and fully functional School Management System built with React, Vite, and custom CSS. This application provides role-based access for Admins, Teachers, and Students, each with their own dedicated dashboards to manage and view school activities.
 
 ## 🚀 Live Demo Features
