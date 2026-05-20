@@ -57,6 +57,31 @@
   --transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Premium Saturated HSL Dark-theme Overrides */
+.dark-theme {
+  --background: #080c16;             /* Saturated HSL deep charcoal navy */
+  --surface: rgba(15, 23, 42, 0.7);   /* Translucent Slate 900 at 70% */
+  --surface-solid: #0f172a;          /* Slate 900 solid */
+  --surface-card: rgba(15, 23, 42, 0.7);
+  --surface-dim: #1e293b;            /* Slate 800 */
+  --surface-container-lowest: #0b0f19;
+  --surface-container-low: #0f172a;
+  --surface-container: #1e293b;
+  --surface-container-high: #334155;
+  --surface-container-highest: #475569;
+  
+  --text-primary: #f8fafc;           /* High contrast light gray */
+  --text-secondary: #cbd5e1;         /* Medium slate text */
+  --text-muted: #64748b;             /* Dim outline text */
+  
+  --border: rgba(255, 255, 255, 0.08); /* 8% opacity white border */
+  --border-dark: rgba(255, 255, 255, 0.04);
+  
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.4);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -74,6 +99,7 @@ body {
   color: var(--text-primary);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 /* Typography styles matching the Luminous Academic Interface */
@@ -1294,3 +1320,40 @@ tr:hover td {
     padding: 20px;
   }
 }
+
+/* 6. Premium Toast Notifications Layer */
+@keyframes slideInRight {
+  from {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Toast component theme styles */
+.toast {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dark-theme .toast {
+  background: var(--surface-solid) !important;
+  border-color: var(--border) !important;
+  color: var(--text-primary) !important;
+}
+
+.theme-toggle-btn:hover {
+  background: var(--surface-container-high) !important;
+  transform: scale(1.08) rotate(15deg);
+}
+
+.dark-theme .theme-toggle-btn {
+  background: var(--surface-container) !important;
+}
+

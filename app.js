@@ -233,7 +233,8 @@ const state = {
     dummyFile: null
   },
   
-  gradebookSubmitStatus: ''
+  gradebookSubmitStatus: '',
+  darkMode: false
 };
 
 // ==========================================
@@ -263,6 +264,13 @@ function initDatabase() {
   }
   
   loadDatabases();
+
+  // Load Dark Mode State
+  const savedDarkMode = localStorage.getItem('tattavyan_dark_mode') === 'true';
+  state.darkMode = savedDarkMode;
+  if (savedDarkMode) {
+    document.body.classList.add('dark-theme');
+  }
 
   // Load Session if saved
   const savedSession = localStorage.getItem('tattavyan_session');
@@ -518,16 +526,22 @@ function renderDashboardLayout() {
       <main class="main-content">
         <header class="topbar">
           <h1 class="topbar-title headline-md">${headerTitle}</h1>
-          <div class="user-profile">
-            <div style="text-align: right;">
-              <p style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin: 0;">${name}</p>
-              <p style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; margin: 2px 0 0;">
-                <span class="badge ${role === 'admin' ? 'danger' : role === 'teacher' ? 'warning' : 'success'}" style="padding: 2px 8px; font-size: 10px;">
-                  ${role}
-                </span>
-              </p>
+          <div class="topbar-actions" style="display: flex; align-items: center; gap: 16px;">
+            <!-- Premium Theme Switcher -->
+            <button onclick="toggleTheme()" class="theme-toggle-btn" aria-label="Toggle Theme" style="background: var(--surface-container-low); border: 1px solid var(--border-dark); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--text-primary); transition: var(--transition);">
+              <i data-lucide="${state.darkMode ? 'sun' : 'moon'}" style="width: 20px; height: 20px;"></i>
+            </button>
+            <div class="user-profile">
+              <div style="text-align: right;">
+                <p style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin: 0;">${name}</p>
+                <p style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; margin: 2px 0 0;">
+                  <span class="badge ${role === 'admin' ? 'danger' : role === 'teacher' ? 'warning' : 'success'}" style="padding: 2px 8px; font-size: 10px;">
+                    ${role}
+                  </span>
+                </p>
+              </div>
+              <div class="avatar">${initial}</div>
             </div>
-            <div class="avatar">${initial}</div>
           </div>
         </header>
 
@@ -2437,6 +2451,7 @@ window.handleLoginSubmit = function(e) {
         localStorage.setItem('tattavyan_session', JSON.stringify({ user: state.currentUser, role: state.userRole }));
         matchStudentProfile();
         updateUI();
+        showToast(`Successfully logged in as ${role.charAt(0).toUpperCase() + role.slice(1)}! Welcome back 👋`, 'success');
       } else {
         throw new Error(`Invalid password credential configured for ${role.toUpperCase()}.`);
       }
@@ -2460,6 +2475,7 @@ window.handleLogout = function() {
   
   localStorage.removeItem('tattavyan_session');
   updateUI();
+  showToast('Logged out successfully. See you next time! 🙋‍♂️', 'info');
 };
 
 // --- NAVIGATION & DYNAMIC CONTROLS ---
@@ -2521,6 +2537,7 @@ window.triggerSimulatedFileUpload = function() {
   sim.isUploading = true;
   sim.progress = 0;
   updateUI();
+  showToast('Uploading assignment worksheet... 📤', 'warning');
 
   const interval = setInterval(() => {
     sim.progress += 10;
@@ -2548,6 +2565,7 @@ window.triggerSimulatedFileUpload = function() {
       const updated = [newSub, ...state.submissions];
       state.submissions = updated;
       saveDb('tattavyan_submissions', updated);
+      showToast('Assignment worksheet uploaded and recorded! 🎉', 'success');
       
       setTimeout(() => {
         closeModal();
@@ -2605,6 +2623,7 @@ window.handleGradebookSubmit = function(e) {
   saveDb('tattavyan_grades', updatedDb);
   
   state.gradebookSubmitStatus = 'Grades updated!';
+  showToast(`Performance grades updated successfully for student ${gf.studentId}! 📝`, 'success');
   updateUI();
   
   setTimeout(() => {
@@ -2640,6 +2659,7 @@ window.handleTeacherGradingSubmit = function(e) {
 
   state.submissions = updated;
   saveDb('tattavyan_submissions', updated);
+  showToast(`Grading report sheet submitted for ${sub.studentName}! 🎓`, 'success');
   closeModal();
 };
 
@@ -2649,6 +2669,7 @@ window.deleteStudent = function(studentId) {
     const updated = state.students.filter(s => s.id !== studentId);
     saveDb('tattavyan_students', updated);
     updateUI();
+    showToast('Student successfully removed from school roster.', 'danger');
   }
 };
 
@@ -2657,6 +2678,7 @@ window.deleteTeacher = function(teacherId) {
     const updated = state.teachers.filter(t => t.id !== teacherId);
     saveDb('tattavyan_teachers', updated);
     updateUI();
+    showToast('Faculty member dismissed from directory.', 'danger');
   }
 };
 
@@ -2665,6 +2687,7 @@ window.deleteNotice = function(noticeId) {
     const updated = state.notices.filter(n => n.id !== noticeId);
     saveDb('tattavyan_notices', updated);
     updateUI();
+    showToast('Announcement removed from notices bulletin.', 'warning');
   }
 };
 
@@ -2741,6 +2764,7 @@ window.saveClassAttendance = function() {
   saveDb('tattavyan_attendance', updatedDb);
   
   state.attendanceControl.saveStatus = 'Attendance updated successfully!';
+  showToast('Attendance registry successfully saved & synced! 📅', 'success');
   updateUI();
   
   setTimeout(() => {
@@ -2796,6 +2820,7 @@ window.handleNewStudentSubmit = function(e) {
   ];
   
   saveDb('tattavyan_students', updated);
+  showToast(`Student ${s.name} enrolled successfully! 🎓`, 'success');
   closeModal();
 };
 
@@ -2810,6 +2835,7 @@ window.handleNewTeacherSubmit = function(e) {
   ];
   
   saveDb('tattavyan_teachers', updated);
+  showToast(`Faculty member ${t.name} added to roster!`, 'success');
   closeModal();
 };
 
@@ -2824,6 +2850,7 @@ window.handleNewNoticeSubmit = function(e) {
   ];
   
   saveDb('tattavyan_notices', updated);
+  showToast('New announcement posted successfully! 🔔', 'success');
   closeModal();
 };
 
@@ -2838,6 +2865,7 @@ window.handleNewHomeworkSubmit = function(e) {
   ];
   
   saveDb('tattavyan_homework', updated);
+  showToast('New assignment worksheet posted successfully!', 'success');
   closeModal();
 };
 
@@ -2854,6 +2882,7 @@ window.handleSecurePaymentSubmit = function(e) {
   c.isProcessing = true;
   c.processingStep = 'Connecting to banking gateway...';
   updateUI();
+  showToast('Processing secure tuition fees payment... 💳', 'warning');
   
   setTimeout(() => {
     c.processingStep = 'Authorizing dues clearance with merchant...';
@@ -2878,6 +2907,7 @@ window.handleSecurePaymentSubmit = function(e) {
         });
         
         saveDb('tattavyan_students', updated);
+        showToast('Tuition fee payment cleared! Status set to ACTIVE. 🎉', 'success');
         updateUI();
       }, 1000);
     }, 1000);
@@ -2885,7 +2915,106 @@ window.handleSecurePaymentSubmit = function(e) {
 };
 
 // ==========================================
-// 12. INITIALIZATION BOOTSTRAP
+// 12. PREMIUM SYSTEMS (TOASTS & THEME TOGGLE)
+// ==========================================
+window.showToast = function(message, type = 'success') {
+  let container = document.getElementById('toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toast-container';
+    container.style.cssText = `
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 9999;
+      pointer-events: none;
+    `;
+    document.body.appendChild(container);
+  }
+  
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type} animate-slide-in-right`;
+  
+  let icon = 'info';
+  let color = '#4b41e1';
+  if (type === 'success') {
+    icon = 'check-circle';
+    color = '#10b981';
+  } else if (type === 'warning') {
+    icon = 'alert-triangle';
+    color = '#f59e0b';
+  } else if (type === 'danger') {
+    icon = 'x-circle';
+    color = '#ba1a1a';
+  }
+  
+  toast.style.cssText = `
+    background: var(--surface-solid);
+    color: var(--text-primary);
+    border-left: 4px solid ${color};
+    padding: 16px 20px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    min-width: 280px;
+    max-width: 380px;
+    backdrop-filter: blur(12px);
+    pointer-events: auto;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  `;
+  
+  toast.innerHTML = `
+    <i data-lucide="${icon}" style="width: 20px; height: 20px; color: ${color}; flex-shrink: 0;"></i>
+    <span style="flex-grow: 1;">${message}</span>
+    <button onclick="this.parentElement.remove()" style="background: transparent; color: var(--text-muted); border: none; padding: 4px; display: flex; align-items: center; cursor: pointer;">
+      <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+    </button>
+  `;
+  
+  container.appendChild(toast);
+  
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons({
+      attrs: {
+        class: 'lucide'
+      },
+      nameAttr: 'data-lucide',
+      node: toast
+    });
+  }
+  
+  // Fade out and remove
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(50px)';
+    setTimeout(() => {
+      toast.remove();
+    }, 300);
+  }, 3500);
+};
+
+window.toggleTheme = function() {
+  state.darkMode = !state.darkMode;
+  localStorage.setItem('tattavyan_dark_mode', state.darkMode);
+  if (state.darkMode) {
+    document.body.classList.add('dark-theme');
+    showToast('Switched to Dark Mode 🌙', 'success');
+  } else {
+    document.body.classList.remove('dark-theme');
+    showToast('Switched to Light Mode ☀️', 'success');
+  }
+  updateUI();
+};
+
+// ==========================================
+// 13. INITIALIZATION BOOTSTRAP
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
   initDatabase();
