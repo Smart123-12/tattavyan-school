@@ -9,7 +9,7 @@ A high-fidelity, ultra-performance School ERP Portal designed strictly around th
 ## 🎨 Design System Highlights (Google Stitch Specs)
 
 * **Academic HSL Palette**: Saturated corporate trust blue (`#004ac6`), digital indigo (`#4b41e1`), and clean high-contrast surface panels overlaid on a rich multi-gradient ambient backdrop.
-* **Premium Typography**: Integration of **Inter** for clean, legible interfaces and **Geist** for digital labels, status tags, metadata numbers, and grade badges.
+* **Stateful Dark Mode / Light Mode Switch**: A premium header control button dynamically swaps HSL variables (`--background`, `--surface`, `--text-primary`, `--border`) with buttery smooth color transitions. Settings are saved to **local storage** and persist upon refresh!
 * **Double-Layered Glassmorphism**: Cards and panels have translucent, semi-transparent backgrounds (`rgba(255, 255, 255, 0.7)`) with a white border at `40% opacity`, creating an elegant layered depth look.
 * **Micro-Animations**: All interactive buttons, inputs, tabs, and dashboards use custom bezier transitions (`cubic-bezier(0.16, 1, 0.3, 1)`) for premium user response.
 
@@ -28,6 +28,12 @@ The portal features a fully active, stateful authentication layer. You can log i
 ---
 
 ## ⚡ Heavy-Duty ERP Features
+
+### 🔔 Dynamic Toast Notification Alerts
+Every single administrative operation, session change, and student interaction has direct action feedback:
+* Signing in displays a personalized greeting toast.
+* Submitting coursework triggers dynamic upload queue timers followed by success notices.
+* Committing class attendance records, updating term grade registers, and issuing secure billing fees clears trigger customized status bars that slide in smoothly from the screen margin.
 
 ### 👨‍🎓 Student Dashboard
 * **3D Student ID Card**: Hovering over the card initiates a beautiful 3D flip animation showing the student details on the front, and emergency contacts, blood group, bus route, and barcoded enrollment on the back.
