@@ -50,6 +50,14 @@ export default function Layout({ children, title }) {
   else if (userRole === 'teacher') links = teacherLinks;
   else if (userRole === 'student') links = studentLinks;
 
+  const getIsActive = (linkPath) => {
+    const currentPath = location.pathname;
+    if (linkPath === '/admin' || linkPath === '/teacher' || linkPath === '/student') {
+      return currentPath === linkPath;
+    }
+    return currentPath.startsWith(linkPath);
+  };
+
   return (
     <div className="app-container">
       {/* Sidebar */}
@@ -62,16 +70,19 @@ export default function Layout({ children, title }) {
         </div>
         
         <nav className="sidebar-nav">
-          {links.map((link) => (
-            <Link 
-              key={link.name} 
-              to={link.path}
-              className={`nav-item ${location.pathname === link.path ? 'active' : ''}`}
-            >
-              {link.icon}
-              <span>{link.name}</span>
-            </Link>
-          ))}
+          {links.map((link) => {
+            const active = getIsActive(link.path);
+            return (
+              <Link 
+                key={link.name} 
+                to={link.path}
+                className={`nav-item ${active ? 'active' : ''}`}
+              >
+                {link.icon}
+                <span>{link.name}</span>
+              </Link>
+            );
+          })}
         </nav>
 
         <div style={{ padding: '24px 16px', borderTop: '1px solid var(--border)' }}>
@@ -92,8 +103,14 @@ export default function Layout({ children, title }) {
           <h1 className="topbar-title">{title}</h1>
           <div className="user-profile">
             <div style={{ textAlign: 'right' }}>
-              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>{currentUser?.email?.split('@')[0] || 'User'}</p>
-              <p style={{ fontSize: 12, color: 'var(--text-secondary)', textTransform: 'capitalize', margin: 0 }}>{userRole}</p>
+              <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
+                {currentUser?.email ? currentUser.email.split('@')[0].toUpperCase() : 'USER'}
+              </p>
+              <p style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.5px', margin: '2px 0 0' }}>
+                <span className={`badge ${userRole === 'admin' ? 'danger' : userRole === 'teacher' ? 'warning' : 'success'}`} style={{ padding: '2px 8px', fontSize: 10 }}>
+                  {userRole}
+                </span>
+              </p>
             </div>
             <div className="avatar">
               {currentUser?.email ? currentUser.email.charAt(0).toUpperCase() : 'U'}

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { GraduationCap, User, BookOpen, Key } from 'lucide-react';
+import { GraduationCap, User, Key, ShieldCheck, Users, BookOpen } from 'lucide-react';
 
 export default function Login() {
   const [role, setRole] = useState('student');
@@ -23,11 +23,18 @@ export default function Login() {
       if (role === 'teacher') navigate('/teacher');
       if (role === 'student') navigate('/student');
     } catch (err) {
-      setError('Failed to sign in. Please check credentials.');
+      setError(err.message || 'Failed to sign in. Please check credentials.');
       console.error(err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleQuickLogin = (selectedRole, defaultEmail, defaultPass) => {
+    setRole(selectedRole);
+    setEmail(defaultEmail);
+    setPassword(defaultPass);
+    setError('');
   };
 
   return (
@@ -40,10 +47,14 @@ export default function Login() {
             </div>
           </div>
           <h1>Tattavyan Edutech</h1>
-          <p>Smart School Management System</p>
+          <p>Luminous Academic ERP Portal</p>
         </div>
 
-        {error && <div className="badge danger" style={{ marginBottom: 20, display: 'block', textAlign: 'center', background: 'rgba(255,0,0,0.1)', color: 'red' }}>{error}</div>}
+        {error && (
+          <div className="badge danger animate-fade-in" style={{ width: '100%', padding: '12px', borderRadius: '10px', marginBottom: 20, display: 'block', textAlign: 'center' }}>
+            {error}
+          </div>
+        )}
 
         <div className="role-selector">
           <button 
@@ -73,12 +84,12 @@ export default function Login() {
           <div className="form-group">
             <label className="form-label">Email / User ID</label>
             <div style={{ position: 'relative' }}>
-              <User size={18} style={{ position: 'absolute', top: 14, left: 14, color: 'var(--text-secondary)' }} />
+              <User size={18} style={{ position: 'absolute', top: 16, left: 18, color: 'var(--text-muted)' }} />
               <input 
                 type="text" 
                 className="form-control" 
-                style={{ paddingLeft: 42 }}
-                placeholder={`Enter ${role} ID (e.g. demo@${role}.com)`}
+                style={{ paddingLeft: 48 }}
+                placeholder={`Enter your ${role} ID`}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -89,12 +100,12 @@ export default function Login() {
           <div className="form-group">
             <label className="form-label">Password</label>
             <div style={{ position: 'relative' }}>
-              <Key size={18} style={{ position: 'absolute', top: 14, left: 14, color: 'var(--text-secondary)' }} />
+              <Key size={18} style={{ position: 'absolute', top: 16, left: 18, color: 'var(--text-muted)' }} />
               <input 
                 type="password" 
                 className="form-control" 
-                style={{ paddingLeft: 42 }}
-                placeholder="Enter password (any password for demo)"
+                style={{ paddingLeft: 48 }}
+                placeholder="Enter password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -105,16 +116,40 @@ export default function Login() {
           <button 
             type="submit" 
             className="btn btn-primary" 
-            style={{ width: '100%', marginTop: 12, padding: 16, fontSize: 16 }}
+            style={{ width: '100%', marginTop: 8, padding: 15, fontSize: 16 }}
             disabled={loading}
           >
             {loading ? 'Signing in...' : `Sign in as ${role.charAt(0).toUpperCase() + role.slice(1)}`}
           </button>
           
-          <div style={{ textAlign: 'center', marginTop: 24 }}>
-            <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
-              <strong>Demo Mode Active:</strong> You can enter any email and password to login securely.
-            </p>
+          <div className="quick-login-panel">
+            <div className="quick-login-title">Quick Demo Login</div>
+            <div className="quick-login-grid">
+              <button
+                type="button"
+                className="quick-login-btn"
+                onClick={() => handleQuickLogin('admin', 'admin@tattavyan.com', 'admin123')}
+              >
+                <ShieldCheck size={16} />
+                <span>Admin</span>
+              </button>
+              <button
+                type="button"
+                className="quick-login-btn"
+                onClick={() => handleQuickLogin('teacher', 'teacher@tattavyan.com', 'teacher123')}
+              >
+                <BookOpen size={16} />
+                <span>Teacher</span>
+              </button>
+              <button
+                type="button"
+                className="quick-login-btn"
+                onClick={() => handleQuickLogin('student', 'student@tattavyan.com', 'student123')}
+              >
+                <Users size={16} />
+                <span>Student</span>
+              </button>
+            </div>
           </div>
         </form>
       </div>
